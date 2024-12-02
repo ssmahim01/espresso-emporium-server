@@ -89,6 +89,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/users/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const result = await usersCollection.findOne(filter);
+      res.send(result);
+    });
+
     app.post('/users', async(req, res) => {
       const newUser = req.body;
       console.log(newUser);
@@ -108,6 +115,25 @@ async function run() {
       };
 
       const result = await usersCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+
+    app.put('/users/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const options = {upsert: true};
+
+      const userInfo = req.body;
+
+      const updateProfile = {
+        $set: {
+        name: userInfo.name,
+        photo: userInfo.photo
+        }
+      };
+
+      const result = await usersCollection.updateOne(filter, updateProfile, options);
+
       res.send(result);
     });
 
